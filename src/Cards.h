@@ -1,6 +1,9 @@
 // (c) Sam Donow 2017
 #pragma once
 #include "CoreEnums.h"
+#include <vector>
+#include <array>
+#include <string>
 
 class GameState;
 class PlayerState;
@@ -16,7 +19,7 @@ struct CardSpec {
 
 // Class that represents any physical card
 // (Actions, Permanents, Planets)
-class Card : private CardSpec {
+class Card : public CardSpec {
   public:
     explicit Card(const CardSpec &spec) : CardSpec(spec) {}
 
@@ -24,15 +27,14 @@ class Card : private CardSpec {
     const std::string &text() const { return displayText; }
     short points() const { return influence; }
     bool operator==(const Card &other) { return id == other.id; }
-}
+};
 
-// TODO: pass around just IDs instead of actual Action objects?
 class Action : public Card {
   private:
     const bool isPermanent;
   public:
     Action(const CardSpec &spec, bool permanent) :
-        CardSpec(spec), isPermanent(permanent) {}
+        Card(spec), isPermanent(permanent) {}
     virtual std::vector<int> queryChoice(Player &player) { return {}; }
     virtual bool legal(const std::vector<int> &choices, const Player &player) { return true; }
     // Returns true if the card should be moved to the discard
@@ -47,5 +49,4 @@ class Planet : public Card {
     uint8_t fighterCost;
     bool handSizePlus;
     std::array<Resource, 3> resourceSpots;
-}
-
+};

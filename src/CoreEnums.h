@@ -14,18 +14,18 @@ ENUM(Symbol, char,
         // Fighter,
         // Destroyer,
         // Battlecruiser
-    );
+    )
 
-ENUM(PlanetType, char, Fertile, Metallic, Advanced);
+ENUM(PlanetType, char, Fertile, Metallic, Advanced)
 
 // Same as Symbol until expansion
-ENUM(Role, char, Survery, Warfare, Colonize, Produce, Trade, Research);
+ENUM(Role, char, Survery, Warfare, Colonize, Produce, Trade, Research)
 
-ENUM(TechType, char, Action, Permanent);
+ENUM(TechType, char, Action, Permanent)
 
-ENUM(Resource, char, Silicon, Rock, Water, Grain);
+ENUM(Resource, char, Silicon, Rock, Water, Grain)
 
-ENUM(Phase, char, Action, RoleLeader, RoleFollower, Cleanup, None);
+ENUM(Phase, char, Action, RoleLeader, RoleFollower, Cleanup, None)
 
 ENUM(ActionID, unsigned,
     Survey,

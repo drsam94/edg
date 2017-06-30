@@ -1,6 +1,8 @@
 // (c) 2017 Sam Donow
 #include "CoreEnums.h"
 #include "Player.h"
+#include "State.h"
+#include <unordered_map>
 #include <vector>
 
 class ChoiceAdapter;
@@ -8,7 +10,7 @@ class Action;
 
 class GodBook {
   private:
-    unordered_map<ActionID, unique_ptr<Action>> actionMap;
+      std::unordered_map<ActionID, std::unique_ptr<Action>> actionMap;
 };
 
 class GameMaster {

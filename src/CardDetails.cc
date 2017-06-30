@@ -1,4 +1,4 @@
-(c) 2017 Sam Donow
+// (c) 2017 Sam Donow
 #include "CardDetails.h"
 
 #define EFFECT(CardType) \
