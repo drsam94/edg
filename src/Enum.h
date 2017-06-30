@@ -52,16 +52,3 @@ namespace std { \
         } \
     }; \
 }
-
-#undef _NUM_ARGS
-#undef NUM_ARGS
-#undef EXPAND
-#undef FIRSTARG
-#undef RESTARGS
-#undef FOREACH
-#undef FOREACH_
-#undef FOREACH__
-#undef FOREACH_1
-#undef FOREACH_2
-#undef FOREACH_3
-#undef STRINGIFY
