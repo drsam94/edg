@@ -1,49 +1,45 @@
 // (c) Sam Donow 2017
 #pragma once
 #include "CoreEnums.h"
+#include "Player.h"
 #include <vector>
 #include <array>
 #include <string>
 
-class GameState;
-class PlayerState;
-class ChoiceAdapter;
 // Raw information needed for all cards
 struct CardSpec {
     std::string title;
     std::string displayText;
     std::array<Symbol, 3> symbols;
     short influence;
-    short id;
+    int uniqid;
 };
 
 // Class that represents any physical card
 // (Actions, Permanents, Planets)
-class Card : public CardSpec {
-  public:
+struct Card : public CardSpec {
     explicit Card(const CardSpec &spec) : CardSpec(spec) {}
 
     const std::string &name() const { return title; }
     const std::string &text() const { return displayText; }
     short points() const { return influence; }
-    bool operator==(const Card &other) { return id == other.id; }
+    bool operator==(const Card &other) { return uniqid == other.uniqid; }
 };
 
-class Action : public Card {
-  private:
+struct Action : public Card {
+    const ActionID ID;
     const bool isPermanent;
-  public:
-    Action(const CardSpec &spec, bool permanent) :
-        Card(spec), isPermanent(permanent) {}
-    virtual std::vector<int> queryChoice(Player &player) { return {}; }
-    virtual bool legal(const std::vector<int> &choices, const Player &player) { return true; }
+    Action(const CardSpec &spec, ActionID id, bool permanent) :
+        Card(spec), ID(id), isPermanent(permanent) {}
+    virtual std::vector<int> queryChoice(Player &player) const { return {}; }
+    virtual bool legal(const std::vector<int> &choices, const Player &player) const { return true; }
     // Returns true if the card should be moved to the discard
     // returns false otherwise (maybe moved to a colony, maybe removed from game)
-    virtual bool effect(const std::vector<int> &playerChoice, Player &player) = 0;
+    virtual bool effect(const std::vector<int> &playerChoice, Player &player) const = 0;
+    ActionID getID() const { return ID; }
 };
 
-class Planet : public Card {
-  private:
+struct Planet : public Card {
     PlanetType type;
     uint8_t colonyCost;
     uint8_t fighterCost;

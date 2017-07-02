@@ -1,10 +1,14 @@
 // (c) 2017 Sam Donow
+#pragma once
 #include "CoreEnums.h"
 #include "ChoiceAdapter.h"
 #include <memory>
 #include <optional>
 
+class GameState;
+class PlayerState;
 class Player {
+  private:
     GameState *gameState;
     PlayerState *state;
     ChoiceAdapter adapter;
@@ -13,13 +17,13 @@ class Player {
   public:
 
     Player(PlayerState *_state, ChoiceAdapter type) : state(_state),
-        adapter(state, type) {}
+        adapter{} {}
     /// Interface exposed to GameMaster
-    std::optional<ActionID> getActionChoice();
+    ActionID getActionChoice();
     Role chooseRole();
     void startTurn() { currentPhase = Phase::Action; }
     bool hasActionsToPlay() { return actionsLeft > 0; }
-    void playAction(ActionID action);
+    bool playAction(ActionID action);
     void leadRole(Role role);
     void followOrDissentRole(Role role);
 
@@ -32,11 +36,13 @@ class Player {
     /// exceptions in cases of bad input
     void getFighters(int count);
     void settlePlanet(int planetIdx);
+    void attackPlanet(int planetIdx);
     void addColony(int planetIdx, ActionID action);
     void produce(int planetIdx, int resourceSlotIdx);
-    void trace(int planetIdx, int resourceSlotIdx);
+    void trade(int planetIdx, int resourceSlotIdx);
     void removeFromHand(int handIdx);
     void gainRole(int roleIdx);
+    void drawCards(int count);
 };
 
 

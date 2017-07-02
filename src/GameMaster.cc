@@ -1,25 +1,25 @@
 // (c) 2017 Sam Donow
 #include "GameMaster.h"
 
-GameMaster::gameLoop()
+void GameMaster::gameLoop()
 {
     gameState.init(4);
     do {
-        Player &currentPlayer = gameState.nextPlayer();
+        Player &currentPlayer = getCurrentPlayer();
         currentPlayer.startTurn();
         while (currentPlayer.hasActionsToPlay()) {
-            std::optional<Action> action = currentPlayer.getActionChoice();
-            if (!action) break;
+            ActionID action = currentPlayer.getActionChoice();
+            if (!action.valid()) break;
 
-            player.playAction(*action);
+            currentPlayer.playAction(action);
         }
-        Role role = player.chooseRole();
-        std::vector<Player *> clockwisePlayers = player.getTurnOrderPlayers();
+        Role role = currentPlayer.chooseRole();
+        std::vector<Player *> clockwisePlayers = getTurnOrderPlayers();
         auto it = clockwisePlayers.begin();
         (*it)->leadRole(role);
         for (; it != clockwisePlayers.end(); ++it) {
             (*it)->followOrDissentRole(role);
         }
     }
-    while (!(gameState.endCondition() && currentPlayer.wasFirstPlayer()))
+    while (!(gameState.endCondition()));
 }

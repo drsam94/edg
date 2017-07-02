@@ -32,4 +32,13 @@ ENUM(ActionID, unsigned,
     Warfare,
     Colonize,
     ProduceTrade,
-    Research)
+    Research,
+    Politics)
+
+#define ACT_ON_ALL_ACTIONS(m) \
+    m(Survey) \
+    m(Warfare) \
+    m(Colonize) \
+    m(ProduceTrade) \
+    m(Research) \
+    m(Politics)

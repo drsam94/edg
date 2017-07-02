@@ -8,7 +8,7 @@
 #include <map>
 #include <random>
 
-class PlanetState {
+struct PlanetState {
     Planet card;
     bool revealed;
     bool scorched;
@@ -19,7 +19,7 @@ class PlanetState {
 
 };
 
-class PlayerState {
+struct PlayerState {
     std::vector<ActionID> hand;
     std::vector<ActionID> deck;
     std::vector<ActionID> discard;
@@ -27,9 +27,8 @@ class PlayerState {
     std::vector<ActionID> permanents;
     std::vector<PlanetState> planets;
     uint8_t fighters;
-    uint8_t influenceTokens;
+    uint8_t influence;
 
-  public:
     void draw(int cards);
 };
 
@@ -47,18 +46,20 @@ class TechTree {
     std::map<TechCost, ActionID> cards;
 };
 
-class GameState {
+struct GameState {
     std::vector<PlayerState> players;
+
     RoleState roles;
     std::deque<Planet> planetDeck;
     TechTree availableTechs;
     uint8_t unclaimedInfluence;
     uint8_t unclaimedBlueInfluence;
+    uint8_t currentPlayerIndex;
     std::unordered_map<Resource, uint8_t> unclaimedResources;
-  public:
     static std::mt19937 rng;
 
-    Player &getNextPlayer();
+    bool endCondition() const { return false; }
+    void init(size_t numPlayers) {}
 };
 
 
