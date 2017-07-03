@@ -4,6 +4,7 @@
 #include <vector>
 #include <array>
 #include <string>
+#include <iostream>
 
 class Player;
 // Raw information needed for all cards
@@ -14,6 +15,8 @@ struct CardSpec {
     const std::array<Symbol, 3> symbols;
     const short influence;
     const int uniqid;
+
+    friend std::ostream &operator<<(std::ostream &os, const CardSpec &spec);
 };
 
 // Class that represents any physical card
@@ -25,6 +28,7 @@ struct Card : public CardSpec {
     const std::string &text() const { return displayText; }
     short points() const { return influence; }
     bool operator==(const Card &other) { return uniqid == other.uniqid; }
+    friend std::ostream &operator<<(std::ostream &os, const Card &card) { return os << static_cast<const CardSpec &>(card); }
 };
 
 struct Action : public Card {
@@ -38,6 +42,7 @@ struct Action : public Card {
     virtual bool effect(const std::vector<int> &playerChoice, Player &player) const = 0;
     ActionID getID() const { return static_cast<ActionID>(uniqid); }
     size_t countSyms(Symbol sym) const { return std::count(symbols.begin(), symbols.end(), sym); }
+    friend std::ostream &operator<<(std::ostream &os, const Action &action) { return os << static_cast<const CardSpec &>(action); }
 };
 
 struct Planet : public Card {
@@ -52,4 +57,5 @@ struct Planet : public Card {
         Card(spec), type(pTy), colonyCost(colonies), fighterCost(fighters),
         resourceSpots(rs) {}
     PlanetID getID() const { return static_cast<PlanetID>(uniqid - PlanetIDOffset); }
+    friend std::ostream &operator<<(std::ostream &os, const Planet &planet) { return os << static_cast<const CardSpec &>(planet); }
 };

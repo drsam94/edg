@@ -14,18 +14,18 @@ class GodBook {
     static std::unique_ptr<GodBook> singleton;
   public:
     GodBook();
-    static GodBook &instance() {
+    static const GodBook &instance() {
         if (unlikely(singleton == nullptr)) {
             singleton.reset(new GodBook);
         }
         return *singleton;
     }
-    const Action &getAction(ActionID id) {
-        return *actionMap[id].get();
+    const Action &getAction(ActionID id) const {
+        return *actionMap.find(id)->second.get();
     }
 
-    const Planet &getPlanet(PlanetID id) {
-        return *planetMap[id].get();
+    const Planet &getPlanet(PlanetID id) const {
+        return *planetMap.find(id)->second.get();
     }
 };
 

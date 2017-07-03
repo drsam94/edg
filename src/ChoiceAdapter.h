@@ -12,12 +12,20 @@
 /// 3) (potentially) an AI/ML interface
 class ChoiceAdapter {
   public:
-    virtual int chooseAction() { return {}; }
-
+    virtual ActionID chooseAction(const std::vector<ActionID> &hand) { return {}; }
     virtual std::vector<int> getDissentBoostFollowChoice(Role role, bool lead) { return {}; }
     virtual size_t chooseOneOfPlanetCards(const std::vector<PlanetID> &planets) { return {}; }
     virtual size_t chooseOneOfFDPlanets(const std::vector<PlanetState> &planets) { return {}; }
     virtual std::vector<int> placeColonies(const std::vector<ActionID> &colonies, const std::vector<PlanetState> &planets) { return {}; }
     virtual std::vector<int> chooseResourceSlots(size_t symcount, const std::vector<PlanetState> &planets, bool emptySlots) { return {}; };
     virtual ActionID getResearchChoice(size_t symcount, const TechTree &techs, const std::vector<PlanetState> &planets) { return {}; };
+};
+
+class TTYChoiceAdapter : public ChoiceAdapter {
+    std::ostream &out;
+    std::istream &in;
+  public:
+    TTYChoiceAdapter(std::ostream &_out = std::cout, std::istream &_in = std::cin) : out(_out), in(_in) {}
+
+    ActionID chooseAction(const std::vector<ActionID> &hand) override;
 };

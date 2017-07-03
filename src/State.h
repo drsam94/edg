@@ -50,6 +50,7 @@ class RoleState {
             return true;
         }
     }
+    void init(int numPlayers);
 };
 
 class TechTree {
@@ -69,6 +70,7 @@ class TechTree {
             }
         }
     }
+    void init();
 };
 
 struct GameState {
@@ -83,5 +85,5 @@ struct GameState {
     static std::mt19937 rng;
 
     bool endCondition() const { return false; }
-    void init(size_t numPlayers) {}
+    void init(int numPlayers);
 };

@@ -3,12 +3,13 @@
 #include "GodBook.h"
 
 ActionID Player::getActionChoice() {
-    int actionChoice = adapter.chooseAction();
-    if (actionChoice < 0) {
-        return ActionID::Unset;
+    ActionID actionChoice = adapter.chooseAction(state->hand);
+    if (!actionChoice.valid()) {
+        return actionChoice;
     } else {
         // erase the thing from the hand
-        return state->hand[actionChoice];
+        state->hand.erase(std::find(state->hand.begin(), state->hand.end(), actionChoice));
+        return actionChoice;
     }
 }
 
