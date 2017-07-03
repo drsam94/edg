@@ -4,13 +4,7 @@
 #include<vector>
 #define DETAILS(Type, title, symArr, inf, perm, rules) \
 Type::Type() : Action(CardSpec{title, rules, symArr, inf, ActionID::Type}, \
-            ActionID::Type, \
             perm) {} \
-
-#define SYM_3(t1, t2, t3) std::array<Symbol, 3>{{Symbol::t1, Symbol::t2, Symbol::t3}}
-#define SYM_2(t1, t2) SYM_3(t1, t2, Unset)
-#define SYM_1(t1) SYM_2(t1, Unset)
-#define SYM_0() SYM_1(Unset)
 
 DETAILS(Survey, "Survey", SYM_1(Survey), 0, false, "...")
 DETAILS(Warfare, "Warfare", SYM_1(Warfare), 0, false, "...")

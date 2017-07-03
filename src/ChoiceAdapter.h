@@ -1,6 +1,7 @@
 // (c) 2017 Sam Donow
 #pragma once
-
+#include "CoreEnums.h"
+#include <vector>
 /// Currently, for all choices, we use an ad-hoc vector-of-ints format,
 /// which tends to work well as most choices tend to collection of indices, etc
 /// I also want the data to be very simple, as these choices will be returned by
@@ -12,5 +13,6 @@ class ChoiceAdapter {
   public:
     virtual int chooseAction() { return {}; }
 
-    virtual vector<int> getDissentBoostFollowChoice(Role role, bool lead) { return {}; }
+    virtual std::vector<int> getDissentBoostFollowChoice(Role role, bool lead) { return {}; }
+    virtual int chooseOneOfPlanets(const std::vector<PlanetID> &planets) { return {}; }
 };

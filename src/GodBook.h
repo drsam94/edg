@@ -9,6 +9,7 @@
 class GodBook {
   private:
     std::unordered_map<ActionID, std::unique_ptr<Action>> actionMap;
+    std::unordered_map<PlanetID, std::unique_ptr<Planet>> planetMap;
     static std::unique_ptr<GodBook> singleton;
   public:
     GodBook();
@@ -20,6 +21,10 @@ class GodBook {
     }
     const Action &getAction(ActionID id) {
         return *actionMap[id].get();
+    }
+
+    const Planet &getPlanet(PlanetID id) {
+        return *planetMap[id].get();
     }
 };
 

@@ -8,7 +8,8 @@ ENUM(Symbol, char,
         Colonize,
         Produce,
         Trade,
-        Research
+        Research,
+        HandSizePlus
         //EXPANSION: ,
         // Resource,
         // Fighter,
@@ -27,13 +28,14 @@ ENUM(Resource, char, Silicon, Rock, Water, Grain)
 
 ENUM(Phase, char, Action, RoleLeader, RoleFollower, Cleanup, None)
 
-ENUM(ActionID, unsigned,
-    Survey,
-    Warfare,
-    Colonize,
-    ProduceTrade,
-    Research,
-    Politics)
+
+#define ACT_ON_ALL_PLANETS(m) \
+    m(StartSaturn1) \
+    m(StartSaturn2) \
+    m(StartEarth1) \
+    m(StartEarth2) \
+    m(StartMars1) \
+    m(StartMars2)
 
 #define ACT_ON_ALL_ACTIONS(m) \
     m(Survey) \
@@ -42,6 +44,12 @@ ENUM(ActionID, unsigned,
     m(ProduceTrade) \
     m(Research) \
     m(Politics)
+
+#define COMMA(x) x,
+
+ENUM(ActionID, unsigned, ACT_ON_ALL_ACTIONS(COMMA) Invalid)
+
+ENUM(PlanetID, unsigned, ACT_ON_ALL_PLANETS(COMMA) Invalid)
 
 inline ActionID RoleToAction(Role role) {
     switch (role) {
@@ -60,3 +68,5 @@ inline ActionID RoleToAction(Role role) {
             return ActionID::Unset;
     }
 }
+
+#undef COMMA

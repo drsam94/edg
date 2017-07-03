@@ -2,6 +2,7 @@
 #pragma once
 #include "CoreEnums.h"
 #include "Cards.h"
+#include "GodBook.h"
 #include <vector>
 #include <deque>
 #include <unordered_map>
@@ -9,14 +10,18 @@
 #include <random>
 
 struct PlanetState {
-    Planet card;
+    PlanetID card;
     bool revealed;
     bool scorched;
     std::vector<ActionID> colonies;
     std::array<bool, 3> resourcesFilled;
 
     void flip() { revealed = true; }
-
+    PlanetState(PlanetID id) : card(id), revealed(false),
+        scorched(false), colonies{}, resourcesFilled{{ false, false, false }} {}
+    const Planet &getCard() {
+        return GodBook::instance().getPlanet(card);
+    }
 };
 
 struct PlayerState {
@@ -59,7 +64,7 @@ class TechTree {
 struct GameState {
     std::vector<PlayerState> players;
     RoleState roles;
-    std::deque<Planet> planetDeck;
+    std::deque<PlanetID> planetDeck;
     TechTree availableTechs;
     uint8_t unclaimedInfluence;
     uint8_t unclaimedBlueInfluence;
@@ -70,5 +75,3 @@ struct GameState {
     bool endCondition() const { return false; }
     void init(size_t numPlayers) {}
 };
-
-

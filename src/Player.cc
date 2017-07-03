@@ -46,7 +46,7 @@ void Player::settlePlanet(int planetIdx) {
 void Player::attackPlanet(int planetIdx) {
     PlanetState &pstate = state->planets[planetIdx];
     pstate.flip();
-    state->fighters -= pstate.card.fighterCost;
+    state->fighters -= pstate.getCard().fighterCost;
 }
 void Player::addColony(int planetIdx, ActionID action) {
     state->planets[planetIdx].colonies.push_back(action);
@@ -78,7 +78,7 @@ void Player::gainRoleTo(Role role, bool toHand) {
 }
 
 void Player::doRole(Role role, bool leader) {
-    vector<int> choices = adapter.getDissentBoostFollowChoice(role, leader);
+    std::vector<int> choices = adapter.getDissentBoostFollowChoice(role, leader);
     if (choices[0] == 0) {
         // dissent
         drawCards(1);
@@ -88,12 +88,21 @@ void Player::doRole(Role role, bool leader) {
 
     switch (role) {
         case Role::Survey: {
-            vector<Planet> planetsToSee;
-
-            for (int i = 0; i < symcount; ++i) {
-
+            std::vector<PlanetID> planetsToSee;
+            const size_t numToLook = std::max(gameState->planetDeck.size(),
+                    static_cast<size_t>(symcount + leader - 1));
+            for (size_t i = 0; i < numToLook; ++i) {
+                planetsToSee.push_back(gameState->planetDeck.back());
+                gameState->planetDeck.pop_back();
+            }
+            const size_t planetChoice = adapter.chooseOneOfPlanets(planetsToSee);
+            for (size_t i = 0; i < planetsToSee.size(); ++i) {
+                if (i == planetChoice) {
+                    state->planets.emplace_back(planetsToSee[i]);
+                }
+                gameState->planetDeck.push_front(planetsToSee[i]);
             }
         }
+        default: return;
     }
-
 }
