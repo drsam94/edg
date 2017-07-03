@@ -13,7 +13,7 @@ ActionID Player::getActionChoice() {
 }
 
 bool Player::playAction(ActionID id) {
-    const Action &action = GodBook::getAction(id);
+    const Action &action = GodBook::instance().getAction(id);
     std::vector<int> choices = action.queryChoice(*this);
     if (!action.legal(choices, *this))
         return false;
@@ -24,18 +24,8 @@ bool Player::playAction(ActionID id) {
     return true;
 }
 
-void Player::leadRole(Role role) {
-    //std::vector<int> choices = gameState->roles.queryChoices(role);
-    //gameState->roleState.doRole(role, choices, true);
-}
-
-void Player::followOrDissentRole(Role role) {
-    //std::vector<int> choices = gameState->roles.queryChoices(role, true);
-    //if (choices[0] == 0) {
-    //    drawCards(1);
-    //} else {
-    //    gameState->roleState.doRole(role, choices, false);
-    //}
+Role Player::chooseRole() {
+    return Role::Survey; // use adapter;
 }
 
 void Player::drawCards(int count) {
@@ -75,8 +65,35 @@ void Player::removeFromHand(int handIdx) {
     state->hand.erase(state->hand.begin() + handIdx);
 }
 
-void Player::gainRole(int roleIdx) {
-    //const Role role = (Role)roleIdx;
-    //state->hand.push_back(RoleIDToActionID(roleIdx));
-    //gameState.roles.removeRole(roleIdx);
+void Player::gainRoleTo(Role role, bool toHand) {
+    const bool getCard = gameState->roles.removeRole(role);
+    if (getCard) {
+        const ActionID action = RoleToAction(role);
+        if (toHand) {
+            state->hand.push_back(action);
+        } else {
+            state->discard.push_back(action);
+        }
+    }
+}
+
+void Player::doRole(Role role, bool leader) {
+    vector<int> choices = adapter.getDissentBoostFollowChoice(role, leader);
+    if (choices[0] == 0) {
+        // dissent
+        drawCards(1);
+        return;
+    }
+    int symcount = choices[1];
+
+    switch (role) {
+        case Role::Survey: {
+            vector<Planet> planetsToSee;
+
+            for (int i = 0; i < symcount; ++i) {
+
+            }
+        }
+    }
+
 }

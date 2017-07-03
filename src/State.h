@@ -35,6 +35,16 @@ struct PlayerState {
 class RoleState {
     // need to be careful about Produce/Trade special case
     std::unordered_map<Role, uint8_t> roleCards;
+  public:
+    bool removeRole(Role role) {
+        uint8_t &amount = roleCards[role];
+        if (amount == 0) {
+            return false;
+        } else {
+            --amount;
+            return true;
+        }
+    }
 };
 
 class TechTree {
@@ -48,7 +58,6 @@ class TechTree {
 
 struct GameState {
     std::vector<PlayerState> players;
-
     RoleState roles;
     std::deque<Planet> planetDeck;
     TechTree availableTechs;

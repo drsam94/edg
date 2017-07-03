@@ -21,6 +21,7 @@ class Player {
     /// Interface exposed to GameMaster
     ActionID getActionChoice();
     Role chooseRole();
+    void doRole(Role role, bool isLeader);
     void startTurn() { currentPhase = Phase::Action; }
     bool hasActionsToPlay() { return actionsLeft > 0; }
     bool playAction(ActionID action);
@@ -41,7 +42,7 @@ class Player {
     void produce(int planetIdx, int resourceSlotIdx);
     void trade(int planetIdx, int resourceSlotIdx);
     void removeFromHand(int handIdx);
-    void gainRole(int roleIdx);
+    void gainRoleTo(Role role, bool toHand);
     void drawCards(int count);
 };
 

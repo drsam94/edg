@@ -15,10 +15,8 @@ void GameMaster::gameLoop()
         }
         Role role = currentPlayer.chooseRole();
         std::vector<Player *> clockwisePlayers = getTurnOrderPlayers();
-        auto it = clockwisePlayers.begin();
-        (*it)->leadRole(role);
-        for (; it != clockwisePlayers.end(); ++it) {
-            (*it)->followOrDissentRole(role);
+        for (auto it = clockwisePlayers.begin(); it != clockwisePlayers.end(); ++it) {
+            (*it)->doRole(role, it == clockwisePlayers.begin());
         }
     }
     while (!(gameState.endCondition()));

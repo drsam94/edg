@@ -64,6 +64,6 @@ EFFECT(Research) {
 }
 
 EFFECT(Politics) {
-    player.gainRole(playerChoice[0]);
+    player.gainRoleTo(static_cast<Role>(playerChoice[0]), true);
     return false;
 }

@@ -19,7 +19,7 @@ ENUM(Symbol, char,
 ENUM(PlanetType, char, Fertile, Metallic, Advanced)
 
 // Same as Symbol until expansion
-ENUM(Role, char, Survery, Warfare, Colonize, Produce, Trade, Research)
+ENUM(Role, char, Survey, Warfare, Colonize, Produce, Trade, Research)
 
 ENUM(TechType, char, Action, Permanent)
 
@@ -42,3 +42,21 @@ ENUM(ActionID, unsigned,
     m(ProduceTrade) \
     m(Research) \
     m(Politics)
+
+inline ActionID RoleToAction(Role role) {
+    switch (role) {
+        case Role::Survey:
+            return ActionID::Survey;
+        case Role::Warfare:
+            return ActionID::Warfare;
+        case Role::Colonize:
+            return ActionID::Colonize;
+        case Role::Produce:
+        case Role::Trade:
+            return ActionID::ProduceTrade;
+        case Role::Research:
+            return ActionID::Research;
+        default:
+            return ActionID::Unset;
+    }
+}
