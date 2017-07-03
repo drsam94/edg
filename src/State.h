@@ -1,7 +1,7 @@
 // (c) 2017 Sam Donow
 #pragma once
-#include "CoreEnums.h"
 #include "Cards.h"
+#include "CoreEnums.h"
 #include "GodBook.h"
 #include <vector>
 #include <deque>
@@ -58,7 +58,17 @@ class TechTree {
         PlanetType type;
         uint8_t amount;
     };
-    std::map<TechCost, ActionID> cards;
+    std::multimap<TechCost, ActionID> cards;
+  public:
+    // Maybe we should use like a bimap or something, idk
+    void erase(ActionID id) {
+        for (auto it = cards.begin(); it != cards.end(); ++it) {
+            if (it->second == id) {
+                cards.erase(it);
+                return;
+            }
+        }
+    }
 };
 
 struct GameState {

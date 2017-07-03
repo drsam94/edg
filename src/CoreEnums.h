@@ -69,4 +69,23 @@ inline ActionID RoleToAction(Role role) {
     }
 }
 
+inline Symbol RoleToSymbol(Role role) {
+    switch (role) {
+        case Role::Survey:
+            return Symbol::Survey;
+        case Role::Warfare:
+            return Symbol::Warfare;
+        case Role::Colonize:
+            return Symbol::Colonize;
+        case Role::Produce:
+            return Symbol::Produce;
+        case Role::Trade:
+            return Symbol::Trade;
+        case Role::Research:
+            return Symbol::Research;
+        default:
+            return Symbol::Unset;
+    }
+}
+
 #undef COMMA

@@ -1,11 +1,11 @@
 // (c) Sam Donow 2017
 #pragma once
 #include "CoreEnums.h"
-#include "Player.h"
 #include <vector>
 #include <array>
 #include <string>
 
+class Player;
 // Raw information needed for all cards
 struct CardSpec {
     const std::string title;
@@ -37,6 +37,7 @@ struct Action : public Card {
     // returns false otherwise (maybe moved to a colony, maybe removed from game)
     virtual bool effect(const std::vector<int> &playerChoice, Player &player) const = 0;
     ActionID getID() const { return static_cast<ActionID>(uniqid); }
+    size_t countSyms(Symbol sym) const { return std::count(symbols.begin(), symbols.end(), sym); }
 };
 
 struct Planet : public Card {

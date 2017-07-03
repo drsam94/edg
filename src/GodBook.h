@@ -1,11 +1,12 @@
 // (c) 2017 Sam Donow
 #pragma once
-#include "CoreEnums.h"
-#include "Cards.h"
 #include "Util.h"
+#include "CoreEnums.h"
 #include <memory>
 #include <unordered_map>
 
+class Action;
+class Planet;
 class GodBook {
   private:
     std::unordered_map<ActionID, std::unique_ptr<Action>> actionMap;

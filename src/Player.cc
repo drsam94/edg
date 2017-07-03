@@ -61,20 +61,22 @@ void Player::trade(int planetIdx, int resourceSlotIdx) {
     ++state->influence;
 }
 
-void Player::removeFromHand(int handIdx) {
-    state->hand.erase(state->hand.begin() + handIdx);
+ActionID Player::removeFromHand(int handIdx) {
+    auto it = state->hand.begin() + handIdx;
+    state->hand.erase(it);
+    return *it;
 }
 
-void Player::gainRoleTo(Role role, bool toHand) {
+ActionID Player::gainRoleTo(Role role, bool toHand) {
     const bool getCard = gameState->roles.removeRole(role);
     if (getCard) {
         const ActionID action = RoleToAction(role);
         if (toHand) {
             state->hand.push_back(action);
-        } else {
-            state->discard.push_back(action);
         }
+        return action;
     }
+    return ActionID::Unset;
 }
 
 void Player::doRole(Role role, bool leader) {
@@ -84,7 +86,19 @@ void Player::doRole(Role role, bool leader) {
         drawCards(1);
         return;
     }
-    int symcount = choices[1];
+    std::vector<ActionID> cardsBeingUsed;
+    ActionID roleCardFromCenter = gainRoleTo(role, false);
+    if (roleCardFromCenter.valid()) {
+        cardsBeingUsed.push_back(roleCardFromCenter);
+    }
+    for (size_t i = 2; i < choices.size(); ++i) {
+        ActionID id = removeFromHand(choices[i]);
+        cardsBeingUsed.push_back(id);
+    }
+    size_t symcount = 0;
+    for (ActionID action : cardsBeingUsed) {
+        symcount += GodBook::instance().getAction(action).countSyms(RoleToSymbol(role));
+    }
 
     switch (role) {
         case Role::Survey: {
@@ -95,14 +109,62 @@ void Player::doRole(Role role, bool leader) {
                 planetsToSee.push_back(gameState->planetDeck.back());
                 gameState->planetDeck.pop_back();
             }
-            const size_t planetChoice = adapter.chooseOneOfPlanets(planetsToSee);
+            const size_t planetChoice = adapter.chooseOneOfPlanetCards(planetsToSee);
             for (size_t i = 0; i < planetsToSee.size(); ++i) {
                 if (i == planetChoice) {
                     state->planets.emplace_back(planetsToSee[i]);
                 }
                 gameState->planetDeck.push_front(planetsToSee[i]);
             }
+            break;
         }
-        default: return;
+        case Role::Warfare: {
+            if (leader && choices[2] == 0) {
+                // attack a planet, symbols don't matter
+                const size_t planet = adapter.chooseOneOfFDPlanets(state->planets);
+                attackPlanet(planet);
+            } else {
+                getFighters(symcount);
+            }
+            break;
+        }
+        case Role::Colonize: {
+            if (leader && choices[2] == 0) {
+                const size_t planet = adapter.chooseOneOfFDPlanets(state->planets);
+                settlePlanet(planet);
+            } else {
+                std::vector<int> planetPlacements = adapter.placeColonies(cardsBeingUsed, state->planets);
+                for (size_t i = 0; i < planetPlacements.size(); ++i) {
+                    addColony(planetPlacements[i], cardsBeingUsed[i]);
+                }
+                cardsBeingUsed.clear();
+                // this is complex
+            }
+            break;
+        }
+        case Role::Produce: {
+            std::vector<int> producePlaces = adapter.chooseResourceSlots(symcount, state->planets, true);
+            for (size_t i = 0; i < producePlaces.size(); i += 2) {
+                produce(producePlaces[i], producePlaces[i + 1]);
+            }
+            break;
+        }
+        case Role::Trade: {
+            std::vector<int> tradePlaces = adapter.chooseResourceSlots(symcount, state->planets, false);
+            for (size_t i = 0; i < tradePlaces.size(); i += 2) {
+                trade(tradePlaces[i], tradePlaces[i + 1]);
+            }
+            break;
+        }
+        case Role::Research: {
+            ActionID action = adapter.getResearchChoice(symcount, gameState->availableTechs, state->planets);
+            gameState->availableTechs.erase(action);
+            state->discard.push_back(action);
+            break;
+        }
+        default: break;
+    }
+    for (ActionID id : cardsBeingUsed) {
+        state->discard.push_back(id);
     }
 }

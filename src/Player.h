@@ -41,8 +41,8 @@ class Player {
     void addColony(int planetIdx, ActionID action);
     void produce(int planetIdx, int resourceSlotIdx);
     void trade(int planetIdx, int resourceSlotIdx);
-    void removeFromHand(int handIdx);
-    void gainRoleTo(Role role, bool toHand);
+    ActionID removeFromHand(int handIdx);
+    ActionID gainRoleTo(Role role, bool toHand);
     void drawCards(int count);
 };
 
