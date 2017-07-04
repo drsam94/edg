@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "State.h"
 #include<vector>
+#include<functional>
 #define DETAILS(Type, title, symArr, inf, perm, rules) \
 Type::Type() : Action(CardSpec{title, rules, symArr, inf, ActionID::Type}, \
             perm) {} \
@@ -66,10 +67,9 @@ EFFECT(Colonize) {
 QUERY(ProduceTrade) {
     return player.adapter.composedAlternatives("Produce a resource",
             &ChoiceAdapter::chooseResourceSlots,
-            // TODO: pretty sure this causes a copy of planets, be careful
-            std::make_tuple(1, player.state->planets, true),
+            std::make_tuple(1, std::cref(player.state->planets), true),
             "Trade a resource", &ChoiceAdapter::chooseResourceSlots,
-            std::make_tuple(1, player.state->planets, false));
+            std::make_tuple(1, std::cref(player.state->planets), false));
 }
 EFFECT(ProduceTrade) {
     if (playerChoice[0] == 0) {
