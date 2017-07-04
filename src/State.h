@@ -52,6 +52,7 @@ class RoleState {
             return true;
         }
     }
+    uint8_t count(Role role) const { return roleCards.find(RoleToAction(role))->second; }
     void init(int numPlayers);
 };
 

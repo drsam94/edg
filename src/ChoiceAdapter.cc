@@ -1,6 +1,18 @@
 #include "ChoiceAdapter.h"
 #include "GodBook.h"
 
+std::vector<int> ChoiceAdapter::getDissentBoostFollowChoice(Role role, bool lead,
+            const std::vector<ActionID> &hand) {
+    if (!lead) {
+        return composedAlternatives("Dissent",
+                &ChoiceAdapter::nullChoice, std::make_tuple(),
+                "Follow", &ChoiceAdapter::chooseCardsFromHand,
+                std::make_tuple(std::cref(hand), -1)) ;
+    } else {
+        return chooseCardsFromHand(hand, -1);
+    }
+}
+
 void TTYChoiceAdapter::displayHand(const std::vector<ActionID> &hand) {
     const GodBook &gb = GodBook::instance();
     for (size_t i = 0; i < hand.size(); ++i) {
@@ -21,26 +33,33 @@ ActionID TTYChoiceAdapter::chooseAction(const std::vector<ActionID> &hand) {
     }
 }
 
-std::vector<int> TTYChoiceAdapter::getDissentBoostFollowChoice(Role role, bool lead,
-    const std::vector<ActionID> &hand) {
-    std::vector<int> choices;
-    if (lead) {
-        // filler
-        choices.emplace_back();
-    } else {
-        out << "Dissent or follow role " << role.str() << "?\n0: Dissent\n1: Follow\n";
-        choices.emplace_back();
-        in >> choices[0];
-    }
-    out << "Pick any number of actions to " << (lead ? "boost" : "follow") << " with (-1 to end)\n";
-    // TODO: only display legal choices, auto-end when no choices left
+std::vector<int> TTYChoiceAdapter::chooseCardsFromHand(const std::vector<ActionID> &hand,
+        int atMost) {
+    out << "Pick cards from your hand (max: " << atMost << '\n';
     displayHand(hand);
     int input;
-    while (true) {
+    std::vector<int> choices;
+    while (atMost < 0 || choices.size() < static_cast<size_t>(atMost)) {
         in >> input;
         if (input == -1) break;
         if (std::find(choices.begin() + 1, choices.end(), input) != choices.end())
             choices.push_back(input);
+    }
+    return choices;
+}
+
+std::vector<int> TTYChoiceAdapter::chooseRole(const RoleState &roles, int atMost) {
+    out << "Choose (" << atMost << ") roles";
+    size_t i = 0;
+    for (Role role : Role::values()) {
+        out << i++ << ": " << role.str() << " (" << roles.count(role) << " left)\n";
+    }
+    std::vector<int> choices;
+    int input;
+    while (choices.size() < static_cast<size_t>(atMost)) {
+        in >> input;
+        if (input == -1) break;
+        choices.push_back(input);
     }
     return choices;
 }

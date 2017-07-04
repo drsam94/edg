@@ -9,10 +9,10 @@ class GameState;
 class PlayerState;
 class Player {
   private:
-    GameState *gameState;
     Phase currentPhase;
     uint8_t actionsLeft;
   public:
+    GameState *gameState;
     PlayerState *state;
     ChoiceAdapter adapter;
 

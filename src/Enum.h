@@ -46,6 +46,13 @@ class EnumType : EnumInternal { \
     } \
     const std::string &str() const { return _names[size_t(toUnderlying())]; } \
     bool valid() const { return static_cast<EnumT>(val) != EnumT::Unset; } \
+    static std::array<EnumType, Count - 1> values() { \
+        std::array<EnumType, Count - 1> ret; \
+        for (UnderlyingType i = 0; i < EnumT::Unset; ++i) { \
+            ret[i] = static_cast<EnumType>(i); \
+        } \
+        return ret; \
+    } \
 }; \
 namespace std { \
     template <> struct hash<EnumType> { \

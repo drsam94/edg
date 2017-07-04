@@ -17,14 +17,16 @@ class ChoiceAdapter {
   public:
     virtual ActionID chooseAction(const std::vector<ActionID> &hand) { return {}; }
     // could/should be pair<bool, vector<ActionID>>
-    virtual std::vector<int> getDissentBoostFollowChoice(Role role, bool lead, const std::vector<ActionID> &hand) { return {}; }
     virtual std::vector<int> chooseOneOfPlanetCards(const std::vector<PlanetID> &planets) { return {}; }
     virtual std::vector<int> chooseOneOfFDPlanets(const std::vector<PlanetState> &planets) { return {}; }
     virtual std::vector<int> placeColonies(const std::vector<ActionID> &colonies, const std::vector<PlanetState> &planets) { return {}; }
     virtual std::vector<int> chooseResourceSlots(size_t symcount, const std::vector<PlanetState> &planets, bool emptySlots) { return {}; };
     virtual ActionID getResearchChoice(size_t symcount, const TechTree &techs, const std::vector<PlanetState> &planets) { return {}; };
     std::vector<int> nullChoice() { return {}; }
-
+    virtual std::vector<int> chooseRole(const RoleState &roles, int atMost) { return {}; }
+    virtual std::vector<int> chooseCardsFromHand(const std::vector<ActionID> &hand, int atMost) {
+    return {};
+    }
     // Something like this is a justification for keeping the return types fully consistent,
     // allowing for easy composition of decisions
     template<typename FnT1, typename FnT2, typename TupleT1, typename TupleT2>
@@ -44,6 +46,9 @@ class ChoiceAdapter {
         ret.insert(ret.end(), additionalChoices.begin(), additionalChoices.end());
         return ret;
     }
+    std::vector<int> getDissentBoostFollowChoice(Role role, bool lead,
+            const std::vector<ActionID> &hand);
+
 };
 
 class TTYChoiceAdapter : public ChoiceAdapter {
@@ -56,5 +61,8 @@ class TTYChoiceAdapter : public ChoiceAdapter {
     TTYChoiceAdapter(std::ostream &_out = std::cout, std::istream &_in = std::cin) : out(_out), in(_in) {}
 
     ActionID chooseAction(const std::vector<ActionID> &hand) override;
-    std::vector<int> getDissentBoostFollowChoice(Role role, bool lead, const std::vector<ActionID> &hand) override;
+
+    std::vector<int> chooseCardsFromHand(const std::vector<ActionID> &hand,
+            int atMost) override;
+    std::vector<int> chooseRole(const RoleState &roles, int atMost) override;
 };

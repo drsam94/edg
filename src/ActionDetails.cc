@@ -50,9 +50,11 @@ EFFECT(Warfare) {
 
 QUERY(Colonize) {
     return player.adapter.composedAlternatives("Add a colony",
-            &ChoiceAdapter::chooseOneOfFDPlanets, std::forward_as_tuple(player.state->planets),
+            &ChoiceAdapter::chooseOneOfFDPlanets,
+            std::make_tuple(std::cref(player.state->planets)),
             "Settle a planet",
-            &ChoiceAdapter::chooseOneOfFDPlanets, std::forward_as_tuple(player.state->planets));
+            &ChoiceAdapter::chooseOneOfFDPlanets,
+            std::make_tuple(std::cref(player.state->planets)));
 }
 EFFECT(Colonize) {
     if (playerChoice[0] == 0) {
@@ -82,8 +84,9 @@ EFFECT(ProduceTrade) {
 
 // Extract "choose multiple cards in hand" logic from dissent and stuff
 QUERY(Research) {
-    return {};
+    return player.adapter.chooseCardsFromHand(player.state->hand, 2);
 }
+
 EFFECT(Research) {
     for (int handIndex : playerChoice) {
         player.removeFromHand(handIndex);
@@ -92,7 +95,7 @@ EFFECT(Research) {
 }
 
 QUERY(Politics) {
-    return {};
+    return player.adapter.chooseRole(player.gameState->roles, 1);
 }
 
 EFFECT(Politics) {
