@@ -111,7 +111,7 @@ void Player::doRole(Role role, bool leader) {
                 planetsToSee.push_back(gameState->planetDeck.back());
                 gameState->planetDeck.pop_back();
             }
-            const size_t planetChoice = adapter.chooseOneOfPlanetCards(planetsToSee);
+            const size_t planetChoice = adapter.chooseOneOfPlanetCards(planetsToSee)[0];
             for (size_t i = 0; i < planetsToSee.size(); ++i) {
                 if (i == planetChoice) {
                     state->planets.emplace_back(planetsToSee[i]);
@@ -123,7 +123,7 @@ void Player::doRole(Role role, bool leader) {
         case Role::Warfare: {
             if (leader && choices[2] == 0) {
                 // attack a planet, symbols don't matter
-                const size_t planet = adapter.chooseOneOfFDPlanets(state->planets);
+                const size_t planet = adapter.chooseOneOfFDPlanets(state->planets)[0];
                 attackPlanet(planet);
             } else {
                 getFighters(symcount);
@@ -132,7 +132,7 @@ void Player::doRole(Role role, bool leader) {
         }
         case Role::Colonize: {
             if (leader && choices[2] == 0) {
-                const size_t planet = adapter.chooseOneOfFDPlanets(state->planets);
+                const size_t planet = adapter.chooseOneOfFDPlanets(state->planets)[0];
                 settlePlanet(planet);
             } else {
                 std::vector<int> planetPlacements = adapter.placeColonies(cardsBeingUsed, state->planets);
