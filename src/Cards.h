@@ -29,6 +29,7 @@ struct Card : public CardSpec {
     short points() const { return influence; }
     bool operator==(const Card &other) { return uniqid == other.uniqid; }
     friend std::ostream &operator<<(std::ostream &os, const Card &card) { return os << static_cast<const CardSpec &>(card); }
+    size_t countSyms(Symbol sym) const { return std::count(symbols.begin(), symbols.end(), sym); }
 };
 
 struct Action : public Card {
@@ -41,7 +42,6 @@ struct Action : public Card {
     // returns false otherwise (maybe moved to a colony, maybe removed from game)
     virtual bool effect(const std::vector<int> &playerChoice, Player &player) const = 0;
     ActionID getID() const { return static_cast<ActionID>(uniqid); }
-    size_t countSyms(Symbol sym) const { return std::count(symbols.begin(), symbols.end(), sym); }
     friend std::ostream &operator<<(std::ostream &os, const Action &action) { return os << static_cast<const CardSpec &>(action); }
 };
 

@@ -81,7 +81,7 @@ ActionID Player::gainRoleTo(Role role, bool toHand) {
 }
 
 void Player::doRole(Role role, bool leader) {
-    std::vector<int> choices = adapter.getDissentBoostFollowChoice(role, leader);
+    std::vector<int> choices = adapter.getDissentBoostFollowChoice(role, leader, state->hand);
     if (choices[0] == 0) {
         // dissent
         drawCards(1);
@@ -92,13 +92,14 @@ void Player::doRole(Role role, bool leader) {
     if (roleCardFromCenter.valid()) {
         cardsBeingUsed.push_back(roleCardFromCenter);
     }
-    for (size_t i = 2; i < choices.size(); ++i) {
+    for (size_t i = 1; i < choices.size(); ++i) {
         ActionID id = removeFromHand(choices[i]);
         cardsBeingUsed.push_back(id);
     }
-    size_t symcount = 0;
+    const Symbol sym = RoleToSymbol(role);
+    size_t symcount = state->staticSymCount(sym);
     for (ActionID action : cardsBeingUsed) {
-        symcount += GodBook::instance().getAction(action).countSyms(RoleToSymbol(role));
+        symcount += GodBook::instance().getAction(action).countSyms(sym);
     }
 
     switch (role) {

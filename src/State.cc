@@ -3,11 +3,6 @@
 
 std::mt19937 GameState::rng{std::random_device{}()};
 
-inline const std::array<ActionID, 10> StartingHand = {{
-    ActionID::Survey, ActionID::Survey, ActionID::Warfare, ActionID::Colonize, ActionID::Colonize,
-    ActionID::ProduceTrade, ActionID::ProduceTrade, ActionID::Research, ActionID::Research, ActionID::Politics
-}};
-
 void PlayerState::draw(int cards) {
     do {
         while (!deck.empty() && cards-- > 0) {
@@ -21,15 +16,33 @@ void PlayerState::draw(int cards) {
     } while (cards && !deck.empty());
 }
 
+size_t PlayerState::staticSymCount(Symbol sym) const {
+    size_t ret = 0;
+    for (const PlanetState &planet : planets) {
+        if (planet.revealed) {
+            ret += planet.getCard().countSyms(sym);
+        }
+    }
+    for (const ActionID &perm : permanents) {
+        ret += GodBook::instance().getAction(perm).countSyms(sym);
+    }
+    return ret;
+}
+
 void RoleState::init(int numPlayers) {
     // TODO 3p extended?
-    roleCards[Role::Survey] = 20 - 2 * numPlayers;
-    roleCards[Role::Warfare] = 16 - numPlayers;
-    roleCards[Role::Colonize] = 20 - 2 * numPlayers;
+    roleCards[ActionID::Survey] = 20 - 2 * numPlayers;
+    roleCards[ActionID::Warfare] = 16 - numPlayers;
+    roleCards[ActionID::Colonize] = 20 - 2 * numPlayers;
     // TODO decide if we should change the key or just wrap it with a sane API
-    roleCards[Role::Produce] = 18 - 2 * numPlayers;
-    roleCards[Role::Research] = 20 - 2 * numPlayers;
+    roleCards[ActionID::ProduceTrade] = 18 - 2 * numPlayers;
+    roleCards[ActionID::Research] = 20 - 2 * numPlayers;
 }
+
+inline const std::array<ActionID, 10> StartingHand = {{
+    ActionID::Survey, ActionID::Survey, ActionID::Warfare, ActionID::Colonize, ActionID::Colonize,
+    ActionID::ProduceTrade, ActionID::ProduceTrade, ActionID::Research, ActionID::Research, ActionID::Politics
+}};
 
 void GameState::init(int numPlayers) {
     roles.init(numPlayers);

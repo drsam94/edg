@@ -13,7 +13,8 @@
 class ChoiceAdapter {
   public:
     virtual ActionID chooseAction(const std::vector<ActionID> &hand) { return {}; }
-    virtual std::vector<int> getDissentBoostFollowChoice(Role role, bool lead) { return {}; }
+    // could/should be pair<bool, vector<ActionID>>
+    virtual std::vector<int> getDissentBoostFollowChoice(Role role, bool lead, const std::vector<ActionID> &hand) { return {}; }
     virtual size_t chooseOneOfPlanetCards(const std::vector<PlanetID> &planets) { return {}; }
     virtual size_t chooseOneOfFDPlanets(const std::vector<PlanetState> &planets) { return {}; }
     virtual std::vector<int> placeColonies(const std::vector<ActionID> &colonies, const std::vector<PlanetState> &planets) { return {}; }
@@ -22,10 +23,14 @@ class ChoiceAdapter {
 };
 
 class TTYChoiceAdapter : public ChoiceAdapter {
+  private:
     std::ostream &out;
     std::istream &in;
+
+    void displayHand(const std::vector<ActionID> &hand);
   public:
     TTYChoiceAdapter(std::ostream &_out = std::cout, std::istream &_in = std::cin) : out(_out), in(_in) {}
 
     ActionID chooseAction(const std::vector<ActionID> &hand) override;
+    std::vector<int> getDissentBoostFollowChoice(Role role, bool lead, const std::vector<ActionID> &hand) override;
 };

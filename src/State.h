@@ -19,7 +19,7 @@ struct PlanetState {
     void flip() { revealed = true; }
     PlanetState(PlanetID id) : card(id), revealed(false),
         scorched(false), colonies{}, resourcesFilled{{ false, false, false }} {}
-    const Planet &getCard() {
+    const Planet &getCard() const {
         return GodBook::instance().getPlanet(card);
     }
 };
@@ -35,14 +35,16 @@ struct PlayerState {
     uint8_t influence;
 
     void draw(int cards);
+
+    size_t staticSymCount(Symbol sym) const;
 };
 
 class RoleState {
     // need to be careful about Produce/Trade special case
-    std::unordered_map<Role, uint8_t> roleCards;
+    std::unordered_map<ActionID, uint8_t> roleCards;
   public:
     bool removeRole(Role role) {
-        uint8_t &amount = roleCards[role];
+        uint8_t &amount = roleCards[RoleToAction(role)];
         if (amount == 0) {
             return false;
         } else {
