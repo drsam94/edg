@@ -88,9 +88,7 @@ QUERY(Research) {
 }
 
 EFFECT(Research) {
-    for (int handIndex : playerChoice) {
-        player.removeFromHand(handIndex);
-    }
+    player.removeFromHand(playerChoice);
     return true;
 }
 

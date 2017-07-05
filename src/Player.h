@@ -41,9 +41,10 @@ class Player {
     void addColony(int planetIdx, ActionID action);
     void produce(int planetIdx, int resourceSlotIdx);
     void trade(int planetIdx, int resourceSlotIdx);
-    ActionID removeFromHand(int handIdx);
+    std::vector<ActionID> removeFromHand(std::vector<int> handIdxs);
     ActionID gainRoleTo(Role role, bool toHand);
     void drawCards(int count);
+    void cleanupPhase();
 };
 
 

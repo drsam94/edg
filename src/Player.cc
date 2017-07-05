@@ -62,10 +62,21 @@ void Player::trade(int planetIdx, int resourceSlotIdx) {
     ++state->influence;
 }
 
-ActionID Player::removeFromHand(int handIdx) {
-    auto it = state->hand.begin() + handIdx;
-    state->hand.erase(it);
-    return *it;
+// I feel like there may be a std::algorithm for this...
+std::vector<ActionID> Player::removeFromHand(std::vector<int> handIdx) {
+    std::vector<ActionID> ret;
+    size_t idxIdx = 0;
+    std::sort(handIdx.begin(), handIdx.end());
+    for (auto it = state->hand.begin(); it != state->hand.end() && idxIdx < handIdx.size();) {
+        if (it == state->hand.begin() + handIdx[idxIdx] - idxIdx) {
+            ret.push_back(*it);
+            it = state->hand.erase(it);
+            ++idxIdx;
+        } else {
+            ++it;
+        }
+    }
+    return ret;
 }
 
 ActionID Player::gainRoleTo(Role role, bool toHand) {
@@ -87,15 +98,15 @@ void Player::doRole(Role role, bool leader) {
         drawCards(1);
         return;
     }
-    std::vector<ActionID> cardsBeingUsed;
+    // We should really consider using something like an array view to be able to freely
+    // pass in a slice here easily
+    choices.erase(choices.begin());
+    std::vector<ActionID> cardsBeingUsed = removeFromHand(choices);
     ActionID roleCardFromCenter = gainRoleTo(role, false);
     if (roleCardFromCenter.valid()) {
         cardsBeingUsed.push_back(roleCardFromCenter);
     }
-    for (size_t i = 1; i < choices.size(); ++i) {
-        ActionID id = removeFromHand(choices[i]);
-        cardsBeingUsed.push_back(id);
-    }
+
     const Symbol sym = RoleToSymbol(role);
     size_t symcount = state->staticSymCount(sym);
     for (ActionID action : cardsBeingUsed) {
@@ -169,4 +180,12 @@ void Player::doRole(Role role, bool leader) {
     for (ActionID id : cardsBeingUsed) {
         state->discard.push_back(id);
     }
+}
+
+void Player::cleanupPhase() {
+    std::vector<int> cardsToDiscard = adapter.chooseCardsFromHand(state->hand, -1);
+    std::vector<ActionID> cardsDiscarded = removeFromHand(cardsToDiscard);
+    state->discard.insert(state->discard.end(), cardsDiscarded.begin(), cardsDiscarded.end());
+    int maxHandSize = 5 + state->staticSymCount(Symbol::HandSizePlus);
+    drawCards(maxHandSize - state->hand.size());
 }

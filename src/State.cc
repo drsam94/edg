@@ -4,6 +4,9 @@
 std::mt19937 GameState::rng{std::random_device{}()};
 
 void PlayerState::draw(int cards) {
+    if (cards <= 0) {
+        return;
+    }
     do {
         while (!deck.empty() && cards-- > 0) {
             hand.push_back(deck.back());

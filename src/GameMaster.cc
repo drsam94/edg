@@ -18,6 +18,8 @@ void GameMaster::gameLoop()
         for (auto it = clockwisePlayers.begin(); it != clockwisePlayers.end(); ++it) {
             (*it)->doRole(role, it == clockwisePlayers.begin());
         }
+        currentPlayer.cleanupPhase();
+        ++gameState.currentPlayerIndex;
     }
     while (!(gameState.endCondition()));
 }
