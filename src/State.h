@@ -89,4 +89,5 @@ struct GameState {
 
     bool endCondition() const { return false; }
     void init(int numPlayers);
+    size_t numPlayers() const { return players.size(); }
 };

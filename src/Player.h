@@ -3,7 +3,6 @@
 #include "CoreEnums.h"
 #include "ChoiceAdapter.h"
 #include <memory>
-#include <optional>
 
 class GameState;
 class PlayerState;
@@ -11,18 +10,19 @@ class Player {
   private:
     Phase currentPhase;
     uint8_t actionsLeft;
+    std::unique_ptr<ChoiceAdapter> adapter;
   public:
+    // TODO: these are set on construction and are never going to change, so they should probably be references
     GameState *gameState;
     PlayerState *state;
-    ChoiceAdapter adapter;
 
-    Player(PlayerState *_state, ChoiceAdapter type) : state(_state),
-        adapter{} {}
+    Player(GameState *_gameState, PlayerState *_state) :
+      adapter(new TTYChoiceAdapter()), gameState(_gameState), state(_state)  {}
     /// Interface exposed to GameMaster
     ActionID getActionChoice();
     Role chooseRole();
     void doRole(Role role, bool isLeader);
-    void startTurn() { currentPhase = Phase::Action; }
+    void startTurn() { currentPhase = Phase::Action; actionsLeft = 1; }
     bool hasActionsToPlay() { return actionsLeft > 0; }
     bool playAction(ActionID action);
     void leadRole(Role role);
@@ -35,6 +35,7 @@ class Player {
     /// called if they are illegal. As I expect the ChoiceAdapters to ensure this
     /// generally, I think that's fine, eventually I will probably move to using
     /// exceptions in cases of bad input
+    ChoiceAdapter &getAdapter() { return *adapter.get(); }
     void getFighters(int count);
     void settlePlanet(int planetIdx);
     void attackPlanet(int planetIdx);

@@ -35,7 +35,7 @@ ActionID TTYChoiceAdapter::chooseAction(const std::vector<ActionID> &hand) {
 
 std::vector<int> TTYChoiceAdapter::chooseCardsFromHand(const std::vector<ActionID> &hand,
         int atMost) {
-    out << "Pick cards from your hand (max: " << atMost << '\n';
+    out << "Pick cards from your hand (max: " << atMost << ")\n";
     displayHand(hand);
     int input;
     std::vector<int> choices;
@@ -49,10 +49,10 @@ std::vector<int> TTYChoiceAdapter::chooseCardsFromHand(const std::vector<ActionI
 }
 
 std::vector<int> TTYChoiceAdapter::chooseRole(const RoleState &roles, int atMost) {
-    out << "Choose (" << atMost << ") roles";
+    out << "Choose (" << atMost << ") roles\n";
     size_t i = 0;
     for (Role role : Role::values()) {
-        out << i++ << ": " << role.str() << " (" << roles.count(role) << " left)\n";
+        out << i++ << ": " << role.str() << " (" << static_cast<int>(roles.count(role)) << " left)\n";
     }
     std::vector<int> choices;
     int input;

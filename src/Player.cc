@@ -3,7 +3,7 @@
 #include "GodBook.h"
 
 ActionID Player::getActionChoice() {
-    ActionID actionChoice = adapter.chooseAction(state->hand);
+    ActionID actionChoice = adapter->chooseAction(state->hand);
     if (!actionChoice.valid()) {
         return actionChoice;
     } else {
@@ -16,6 +16,7 @@ ActionID Player::getActionChoice() {
 bool Player::playAction(ActionID id) {
     const Action &action = GodBook::instance().getAction(id);
     std::vector<int> choices = action.queryChoice(*this);
+    --actionsLeft;
     if (!action.legal(choices, *this))
         return false;
     state->hand.erase(find(begin(state->hand), end(state->hand), action.getID()));
@@ -26,7 +27,7 @@ bool Player::playAction(ActionID id) {
 }
 
 Role Player::chooseRole() {
-    return Role::Survey; // use adapter;
+    return static_cast<Role>(adapter->chooseRole(gameState->roles, 1)[0]);
 }
 
 void Player::drawCards(int count) {
@@ -92,7 +93,7 @@ ActionID Player::gainRoleTo(Role role, bool toHand) {
 }
 
 void Player::doRole(Role role, bool leader) {
-    std::vector<int> choices = adapter.getDissentBoostFollowChoice(role, leader, state->hand);
+    std::vector<int> choices = adapter->getDissentBoostFollowChoice(role, leader, state->hand);
     if (choices[0] == 0) {
         // dissent
         drawCards(1);
@@ -122,7 +123,7 @@ void Player::doRole(Role role, bool leader) {
                 planetsToSee.push_back(gameState->planetDeck.back());
                 gameState->planetDeck.pop_back();
             }
-            const size_t planetChoice = adapter.chooseOneOfPlanetCards(planetsToSee)[0];
+            const size_t planetChoice = adapter->chooseOneOfPlanetCards(planetsToSee)[0];
             for (size_t i = 0; i < planetsToSee.size(); ++i) {
                 if (i == planetChoice) {
                     state->planets.emplace_back(planetsToSee[i]);
@@ -134,7 +135,7 @@ void Player::doRole(Role role, bool leader) {
         case Role::Warfare: {
             if (leader && choices[2] == 0) {
                 // attack a planet, symbols don't matter
-                const size_t planet = adapter.chooseOneOfFDPlanets(state->planets)[0];
+                const size_t planet = adapter->chooseOneOfFDPlanets(state->planets)[0];
                 attackPlanet(planet);
             } else {
                 getFighters(symcount);
@@ -143,10 +144,10 @@ void Player::doRole(Role role, bool leader) {
         }
         case Role::Colonize: {
             if (leader && choices[2] == 0) {
-                const size_t planet = adapter.chooseOneOfFDPlanets(state->planets)[0];
+                const size_t planet = adapter->chooseOneOfFDPlanets(state->planets)[0];
                 settlePlanet(planet);
             } else {
-                std::vector<int> planetPlacements = adapter.placeColonies(cardsBeingUsed, state->planets);
+                std::vector<int> planetPlacements = adapter->placeColonies(cardsBeingUsed, state->planets);
                 for (size_t i = 0; i < planetPlacements.size(); ++i) {
                     addColony(planetPlacements[i], cardsBeingUsed[i]);
                 }
@@ -156,21 +157,21 @@ void Player::doRole(Role role, bool leader) {
             break;
         }
         case Role::Produce: {
-            std::vector<int> producePlaces = adapter.chooseResourceSlots(symcount, state->planets, true);
+            std::vector<int> producePlaces = adapter->chooseResourceSlots(symcount, state->planets, true);
             for (size_t i = 0; i < producePlaces.size(); i += 2) {
                 produce(producePlaces[i], producePlaces[i + 1]);
             }
             break;
         }
         case Role::Trade: {
-            std::vector<int> tradePlaces = adapter.chooseResourceSlots(symcount, state->planets, false);
+            std::vector<int> tradePlaces = adapter->chooseResourceSlots(symcount, state->planets, false);
             for (size_t i = 0; i < tradePlaces.size(); i += 2) {
                 trade(tradePlaces[i], tradePlaces[i + 1]);
             }
             break;
         }
         case Role::Research: {
-            ActionID action = adapter.getResearchChoice(symcount, gameState->availableTechs, state->planets);
+            ActionID action = adapter->getResearchChoice(symcount, gameState->availableTechs, state->planets);
             gameState->availableTechs.erase(action);
             state->discard.push_back(action);
             break;
@@ -183,7 +184,7 @@ void Player::doRole(Role role, bool leader) {
 }
 
 void Player::cleanupPhase() {
-    std::vector<int> cardsToDiscard = adapter.chooseCardsFromHand(state->hand, -1);
+    std::vector<int> cardsToDiscard = adapter->chooseCardsFromHand(state->hand, -1);
     std::vector<ActionID> cardsDiscarded = removeFromHand(cardsToDiscard);
     state->discard.insert(state->discard.end(), cardsDiscarded.begin(), cardsDiscarded.end());
     int maxHandSize = 5 + state->staticSymCount(Symbol::HandSizePlus);

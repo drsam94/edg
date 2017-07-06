@@ -34,7 +34,7 @@ EFFECT(Survey) {
 }
 
 QUERY(Warfare) {
-    return player.adapter.composedAlternatives("get fighter",
+    return player.getAdapter().composedAlternatives("get fighter",
             &ChoiceAdapter::nullChoice, std::make_tuple(),
             "attack planet", &ChoiceAdapter::chooseOneOfFDPlanets, std::forward_as_tuple(player.state->planets));
 }
@@ -49,7 +49,7 @@ EFFECT(Warfare) {
 }
 
 QUERY(Colonize) {
-    return player.adapter.composedAlternatives("Add a colony",
+    return player.getAdapter().composedAlternatives("Add a colony",
             &ChoiceAdapter::chooseOneOfFDPlanets,
             std::make_tuple(std::cref(player.state->planets)),
             "Settle a planet",
@@ -67,7 +67,7 @@ EFFECT(Colonize) {
 }
 
 QUERY(ProduceTrade) {
-    return player.adapter.composedAlternatives("Produce a resource",
+    return player.getAdapter().composedAlternatives("Produce a resource",
             &ChoiceAdapter::chooseResourceSlots,
             std::make_tuple(1, std::cref(player.state->planets), true),
             "Trade a resource", &ChoiceAdapter::chooseResourceSlots,
@@ -84,7 +84,7 @@ EFFECT(ProduceTrade) {
 
 // Extract "choose multiple cards in hand" logic from dissent and stuff
 QUERY(Research) {
-    return player.adapter.chooseCardsFromHand(player.state->hand, 2);
+    return player.getAdapter().chooseCardsFromHand(player.state->hand, 2);
 }
 
 EFFECT(Research) {
@@ -93,7 +93,7 @@ EFFECT(Research) {
 }
 
 QUERY(Politics) {
-    return player.adapter.chooseRole(player.gameState->roles, 1);
+    return player.getAdapter().chooseRole(player.gameState->roles, 1);
 }
 
 EFFECT(Politics) {

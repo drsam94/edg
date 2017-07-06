@@ -16,8 +16,10 @@ std::ostream &operator<<(std::ostream &os, const CardSpec &spec) {
     os << spec.title << ": ";
     for (const Symbol &sym : spec.symbols) {
         if (!sym.valid()) break;
-        os << symChar;
+        os << symChar(sym) << ' ';
     }
-    os << " (" << spec.influence << ')';
+    if (spec.influence > 0) {
+        os << " (" << spec.influence << ')';
+    }
     return os;
 }

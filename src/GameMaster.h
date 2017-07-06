@@ -19,6 +19,6 @@ class GameMaster {
     }
   public:
     void gameLoop();
-    void init(size_t numPlayers) {}
-    std::vector<Player *> getTurnOrderPlayers() { return {}; }
+    void init(size_t numPlayers);
+    std::vector<Player *> getTurnOrderPlayers();
  };

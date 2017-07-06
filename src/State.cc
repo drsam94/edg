@@ -8,15 +8,16 @@ void PlayerState::draw(int cards) {
         return;
     }
     do {
-        while (!deck.empty() && cards-- > 0) {
+        while (!deck.empty() && cards > 0) {
             hand.push_back(deck.back());
             deck.pop_back();
+            --cards;
         }
-        if (deck.empty()) {
+        if (cards > 0 && deck.empty()) {
             std::shuffle(discard.begin(), discard.end(), GameState::rng);
             deck.swap(discard);
         }
-    } while (cards && !deck.empty());
+    } while (cards > 0 && !deck.empty());
 }
 
 size_t PlayerState::staticSymCount(Symbol sym) const {
@@ -48,6 +49,9 @@ inline const std::array<ActionID, 10> StartingHand = {{
 }};
 
 void GameState::init(int numPlayers) {
+    if (!players.empty()) {
+        throw std::runtime_error("Trying to reinit gamestate");
+    }
     roles.init(numPlayers);
     for (int i = 0; i < numPlayers; ++i) {
         players.emplace_back();
@@ -65,4 +69,5 @@ void GameState::init(int numPlayers) {
         player.planets.emplace_back(startingPlanets.back());
         startingPlanets.end();
     }
+    currentPlayerIndex = 0;
 }
