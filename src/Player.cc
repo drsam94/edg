@@ -138,27 +138,41 @@ void Player::doRole(Role role, bool leader) {
             break;
         }
         case Role::Warfare: {
-            if (leader && choices[2] == 0) {
-                // attack a planet, symbols don't matter
-                const size_t planet = adapter->chooseOneOfFDPlanets(state->planets)[0];
-                attackPlanet(planet);
+            if (leader) {
+                std::vector<int> rchoices = adapter->composedAlternatives("Attack Planet",
+                    &ChoiceAdapter::chooseOneOfFDPlanets,
+                    std::make_tuple(std::cref(state->planets)),
+                    "Get Fighters", &ChoiceAdapter::nullChoice, std::make_tuple());
+                if (rchoices[0] == 0) {
+                    // attack a planet, symbols don't matter
+                    attackPlanet(rchoices[1]);
+                } else {
+                    getFighters(symcount);
+                }
             } else {
                 getFighters(symcount);
             }
             break;
         }
         case Role::Colonize: {
-            if (leader && choices[2] == 0) {
-                const size_t planet = adapter->chooseOneOfFDPlanets(state->planets)[0];
-                settlePlanet(planet);
-            } else {
-                std::vector<int> planetPlacements = adapter->placeColonies(cardsBeingUsed, state->planets);
-                for (size_t i = 0; i < planetPlacements.size(); ++i) {
-                    addColony(planetPlacements[i], cardsBeingUsed[i]);
+            std::vector<int> rchoices;
+            if (leader) {
+                rchoices = adapter->composedAlternatives("Settle a Planet",
+                    &ChoiceAdapter::chooseOneOfFDPlanets,
+                    std::make_tuple(std::cref(state->planets)),
+                    "Place Colinies", &ChoiceAdapter::placeColonies,
+                    std::make_tuple(std::cref(cardsBeingUsed), std::cref(state->planets)));
+                if (rchoices[0] == 0) {
+                    settlePlanet(choices[1]);
+                    break;
                 }
-                cardsBeingUsed.clear();
-                // this is complex
+            } else {
+                rchoices = adapter->placeColonies(cardsBeingUsed, state->planets);
             }
+            for (size_t i = leader; i < rchoices.size(); ++i) {
+                addColony(rchoices[i], cardsBeingUsed[i - leader]);
+            }
+            cardsBeingUsed.clear();
             break;
         }
         case Role::Produce: {

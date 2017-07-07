@@ -23,7 +23,7 @@ void GameMaster::gameLoop()
     std::cout << "Beginning 2 Player game...\n";
     init(2);
     do {
-        std::cout << "Beginning of Player " << gameState.currentPlayerIndex << "'s turn\n";
+        std::cout << "Beginning of Player " << static_cast<int>(gameState.currentPlayerIndex) << "'s turn\n";
         Player &currentPlayer = getCurrentPlayer();
         currentPlayer.startTurn();
         while (currentPlayer.hasActionsToPlay()) {
