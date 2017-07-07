@@ -94,18 +94,22 @@ ActionID Player::gainRoleTo(Role role, bool toHand) {
 
 void Player::doRole(Role role, bool leader) {
     std::vector<int> choices = adapter->getDissentBoostFollowChoice(role, leader, state->hand);
-    if (choices[0] == 0) {
-        // dissent
-        drawCards(1);
-        return;
+    if (!leader) {
+        if (choices[0] == 0) {
+            // dissent
+            drawCards(1);
+            return;
+        }
+        // We should really consider using something like an array view to be able to freely
+        // pass in a slice here easily
+        choices.erase(choices.begin());
     }
-    // We should really consider using something like an array view to be able to freely
-    // pass in a slice here easily
-    choices.erase(choices.begin());
     std::vector<ActionID> cardsBeingUsed = removeFromHand(choices);
-    ActionID roleCardFromCenter = gainRoleTo(role, false);
-    if (roleCardFromCenter.valid()) {
-        cardsBeingUsed.push_back(roleCardFromCenter);
+    if (leader) {
+        ActionID roleCardFromCenter = gainRoleTo(role, false);
+        if (roleCardFromCenter.valid()) {
+            cardsBeingUsed.push_back(roleCardFromCenter);
+        }
     }
 
     const Symbol sym = RoleToSymbol(role);
@@ -114,6 +118,7 @@ void Player::doRole(Role role, bool leader) {
         symcount += GodBook::instance().getAction(action).countSyms(sym);
     }
 
+    // TODO: second batch of choices needed for these roles
     switch (role) {
         case Role::Survey: {
             std::vector<PlanetID> planetsToSee;
