@@ -22,6 +22,8 @@ struct PlanetState {
     const Planet &getCard() const {
         return GodBook::instance().getPlanet(card);
     }
+
+    friend std::ostream &operator<<(std::ostream &os, const PlanetState &state);
 };
 
 struct PlayerState {
@@ -35,8 +37,9 @@ struct PlayerState {
     uint8_t influence;
 
     void draw(int cards);
-
     size_t staticSymCount(Symbol sym) const;
+
+    friend std::ostream &operator<<(std::ostream &os, const PlayerState &state);
 };
 
 class RoleState {
@@ -54,6 +57,8 @@ class RoleState {
     }
     uint8_t count(Role role) const { return roleCards.find(RoleToAction(role))->second; }
     void init(int numPlayers);
+
+    friend std::ostream &operator<<(std::ostream &os, const RoleState &state);
 };
 
 class TechTree {
@@ -74,6 +79,8 @@ class TechTree {
         }
     }
     void init();
+
+    friend std::ostream &operator<<(std::ostream &os, const TechTree &state);
 };
 
 struct GameState {
@@ -90,4 +97,6 @@ struct GameState {
     bool endCondition() const { return false; }
     void init(int numPlayers);
     size_t numPlayers() const { return players.size(); }
+
+    friend std::ostream &operator<<(std::ostream &os, const GameState &state);
 };

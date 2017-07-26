@@ -71,3 +71,18 @@ void GameState::init(int numPlayers) {
     }
     currentPlayerIndex = 0;
 }
+
+// toString() methods
+
+std::ostream &operator<<(std::ostream &os, const PlanetState &state) {
+    const Planet &planet = state.getCard();
+    if (!state.revealed) {
+        os << "(FD) " << planet.type << " Costs: " << planet.colonyCost << "(c) " << planet.fighterCost << "(f) colonies: " << state.colonies.size();
+    } else {
+        os << planet << (state.scorched ? " (scorched) " : "") << " res: ";
+        for (size_t i = 0; i < planet.numResourceSlots(); ++i) {
+            os << (state.resourcesFilled[i] ? planet.resourceSpots[i].str() + " " : "");
+        }
+    }
+    return os;
+}

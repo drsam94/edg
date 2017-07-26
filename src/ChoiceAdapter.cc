@@ -13,19 +13,18 @@ std::vector<int> ChoiceAdapter::getDissentBoostFollowChoice(Role role, bool lead
     }
 }
 
-void TTYChoiceAdapter::displayHand(const std::vector<ActionID> &hand) {
+void ChoiceAdapter::displayHand(const std::vector<ActionID> &hand) {
     const GodBook &gb = GodBook::instance();
     for (size_t i = 0; i < hand.size(); ++i) {
-        out << i << ": " << gb.getAction(hand[i]) << "\n";
+        display() << i << ": " << gb.getAction(hand[i]) << "\n";
     }
 }
 
-ActionID TTYChoiceAdapter::chooseAction(const std::vector<ActionID> &hand) {
-    out << "Pick an action:\n";
+ActionID ChoiceAdapter::chooseAction(const std::vector<ActionID> &hand) {
+    display() << "Pick an action:\n";
     displayHand(hand);
     // error handling and stuff
-    int choice;
-    in >> choice;
+    int choice = getChoice();
     if (choice < 0) {
         return ActionID::Unset;
     } else {
@@ -33,14 +32,14 @@ ActionID TTYChoiceAdapter::chooseAction(const std::vector<ActionID> &hand) {
     }
 }
 
-std::vector<int> TTYChoiceAdapter::chooseCardsFromHand(const std::vector<ActionID> &hand,
+std::vector<int> ChoiceAdapter::chooseCardsFromHand(const std::vector<ActionID> &hand,
         int atMost) {
-    out << "Pick cards from your hand (max: " << atMost << ")\n";
+    display() << "Pick cards from your hand (max: " << atMost << ")\n";
     displayHand(hand);
     int input;
     std::vector<int> choices;
     while (atMost < 0 || choices.size() < static_cast<size_t>(atMost)) {
-        in >> input;
+        input = getChoice();
         if (input == -1) break;
         if (std::find(choices.begin() + 1, choices.end(), input) != choices.end())
             choices.push_back(input);
@@ -48,18 +47,46 @@ std::vector<int> TTYChoiceAdapter::chooseCardsFromHand(const std::vector<ActionI
     return choices;
 }
 
-std::vector<int> TTYChoiceAdapter::chooseRole(const RoleState &roles, int atMost) {
-    out << "Choose (" << atMost << ") roles\n";
+std::vector<int> ChoiceAdapter::chooseRole(const RoleState &roles, int atMost) {
+    display() << "Choose (" << atMost << ") roles\n";
     size_t i = 0;
     for (Role role : Role::values()) {
-        out << i++ << ": " << role.str() << " (" << static_cast<int>(roles.count(role)) << " left)\n";
+        display() << i++ << ": " << role.str() << " (" << static_cast<int>(roles.count(role)) << " left)\n";
     }
     std::vector<int> choices;
     int input;
     while (choices.size() < static_cast<size_t>(atMost)) {
-        in >> input;
+        input = getChoice();
         if (input == -1) break;
         choices.push_back(input);
     }
     return choices;
+}
+
+std::vector<int> ChoiceAdapter::chooseOneOfPlanetCards(const std::vector<PlanetID> &planets) {
+    display() << "Choice a Planet Card:\n";
+    size_t i = 0;
+    for (PlanetID planet : planets) {
+        display() << i++ << ": " << GodBook::instance().getPlanet(planet) << "\n";
+    }
+    return { getChoice() };
+}
+
+std::vector<int> ChoiceAdapter::chooseOneOfFDPlanets(const std::vector<PlanetState> &planets) {
+    display() << "Choose a Planet:\n";
+    size_t i = 0;
+    for (const PlanetState &state : planets) {
+        display() << i++ << ": " << state << "\n";
+    }
+    return { getChoice() };
+}
+
+int TTYChoiceAdapter::getChoice() {
+    int input;
+    in >> input;
+    return input;
+}
+
+std::ostream &TTYChoiceAdapter::display() {
+    return out;
 }

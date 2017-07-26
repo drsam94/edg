@@ -57,5 +57,6 @@ struct Planet : public Card {
         Card(spec), type(pTy), colonyCost(colonies), fighterCost(fighters),
         resourceSpots(rs) {}
     PlanetID getID() const { return static_cast<PlanetID>(uniqid - PlanetIDOffset); }
+    size_t numResourceSlots() const { return std::find(std::cbegin(resourceSpots), std::cend(resourceSpots), Resource::Unset) - std::cbegin(resourceSpots);}
     friend std::ostream &operator<<(std::ostream &os, const Planet &planet) { return os << static_cast<const CardSpec &>(planet); }
 };

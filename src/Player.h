@@ -17,7 +17,7 @@ class Player {
     PlayerState *state;
 
     Player(GameState *_gameState, PlayerState *_state) :
-      adapter(new TTYChoiceAdapter()), gameState(_gameState), state(_state)  {}
+      adapter(new TTYChoiceAdapter(*_gameState, *_state)), gameState(_gameState), state(_state)  {}
     /// Interface exposed to GameMaster
     ActionID getActionChoice();
     Role chooseRole();

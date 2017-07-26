@@ -4,9 +4,12 @@
 #include<string>
 #include<cstddef>
 #include<algorithm>
+#include<iostream>
 
 class EnumInternal {
   protected:
+    // TODO: I used basic ptr operations everywhere here to be super certain it was
+    // constexpr, but this could really be cleaned up
     template<size_t N>
     static constexpr std::array<std::string, N> internalGetArr(const char *str) {
         std::array<std::string, N> ret;
@@ -45,6 +48,7 @@ class EnumType : EnumInternal { \
         else return EnumT::Unset; \
     } \
     const std::string &str() const { return _names[size_t(toUnderlying())]; } \
+    friend std::ostream &operator<<(std::ostream &os, const EnumType &val) { return os << val.str(); } \
     bool valid() const { return static_cast<EnumT>(val) != EnumT::Unset; } \
     static std::array<EnumType, Count - 1> values() { \
         std::array<EnumType, Count - 1> ret; \

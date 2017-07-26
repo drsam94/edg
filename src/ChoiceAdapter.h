@@ -12,21 +12,27 @@
 /// 2) A web interface
 /// 3) (potentially) an AI/ML interface
 class ChoiceAdapter {
+  protected:
+    const GameState &gState;
+    const PlayerState &pState;
   private:
-    virtual int generalAlternative(const std::string &choice1, const std::string &choice2) { return {}; }
+    int generalAlternative(const std::string &choice1, const std::string &choice2) { return {}; }
+
+    // Subclasses must implement these two methods for how to communicate with the playing agent
+    virtual int getChoice() = 0;
+    virtual std::ostream &display() = 0;
+    void displayHand(const std::vector<ActionID> &hand);
   public:
-    virtual ActionID chooseAction(const std::vector<ActionID> &hand) { return {}; }
-    // could/should be pair<bool, vector<ActionID>>
-    virtual std::vector<int> chooseOneOfPlanetCards(const std::vector<PlanetID> &planets) { return {}; }
-    virtual std::vector<int> chooseOneOfFDPlanets(const std::vector<PlanetState> &planets) { return {}; }
-    virtual std::vector<int> placeColonies(const std::vector<ActionID> &colonies, const std::vector<PlanetState> &planets) { return {}; }
-    virtual std::vector<int> chooseResourceSlots(size_t symcount, const std::vector<PlanetState> &planets, bool emptySlots) { return {}; };
-    virtual ActionID getResearchChoice(size_t symcount, const TechTree &techs, const std::vector<PlanetState> &planets) { return {}; };
+    ChoiceAdapter(const GameState &gs, const PlayerState &ps) : gState(gs), pState(ps) {}
+    ActionID chooseAction(const std::vector<ActionID> &hand);
+    std::vector<int> chooseOneOfPlanetCards(const std::vector<PlanetID> &planets);
+    std::vector<int> chooseOneOfFDPlanets(const std::vector<PlanetState> &planets);
+    std::vector<int> placeColonies(const std::vector<ActionID> &colonies, const std::vector<PlanetState> &planets) { return {}; }
+    std::vector<int> chooseResourceSlots(size_t symcount, const std::vector<PlanetState> &planets, bool emptySlots) { return {}; };
+    ActionID getResearchChoice(size_t symcount, const TechTree &techs, const std::vector<PlanetState> &planets) { return {}; };
     std::vector<int> nullChoice() { return {}; }
-    virtual std::vector<int> chooseRole(const RoleState &roles, int atMost) { return {}; }
-    virtual std::vector<int> chooseCardsFromHand(const std::vector<ActionID> &hand, int atMost) {
-    return {};
-    }
+    std::vector<int> chooseRole(const RoleState &roles, int atMost);
+    std::vector<int> chooseCardsFromHand(const std::vector<ActionID> &hand, int atMost);
     // Something like this is a justification for keeping the return types fully consistent,
     // allowing for easy composition of decisions
     template<typename FnT1, typename FnT2, typename TupleT1, typename TupleT2>
@@ -56,13 +62,10 @@ class TTYChoiceAdapter : public ChoiceAdapter {
     std::ostream &out;
     std::istream &in;
 
-    void displayHand(const std::vector<ActionID> &hand);
+    std::ostream &display() override;
+    int getChoice() override;
   public:
-    TTYChoiceAdapter(std::ostream &_out = std::cout, std::istream &_in = std::cin) : out(_out), in(_in) {}
+    TTYChoiceAdapter(const GameState &gs, const PlayerState &ps,
+      std::ostream &_out = std::cout, std::istream &_in = std::cin) : ChoiceAdapter(gs, ps), out(_out), in(_in) {}
 
-    ActionID chooseAction(const std::vector<ActionID> &hand) override;
-
-    std::vector<int> chooseCardsFromHand(const std::vector<ActionID> &hand,
-            int atMost) override;
-    std::vector<int> chooseRole(const RoleState &roles, int atMost) override;
 };
