@@ -8,21 +8,20 @@
 
 class EnumInternal {
   protected:
-    // TODO: I used basic ptr operations everywhere here to be super certain it was
-    // constexpr, but this could really be cleaned up
     template<size_t N>
-    static constexpr std::array<std::string, N> internalGetArr(const char *str) {
+    static constexpr std::array<std::string, N> internalGetArr(const std::string &&str) {
         std::array<std::string, N> ret;
-        const char *bptr = str;
-        const char *eptr = str;
-        size_t i = 0;
-        while (i < N) {
-            while (*bptr == '\n' || *bptr == ' ' || *bptr == ',') bptr++;
-            while (eptr <= bptr || (*eptr != '\n' && *eptr != ' '
-                                && *eptr != ',' && *eptr != '\0')) eptr++;
-            ret[i++] = std::string(bptr, eptr - bptr);
-            bptr = eptr;
-        }
+        auto isWhitespace = [](char c) {
+            return c == '\n' || c == ',' || c == '\0' || c == ' ';
+        };
+        auto beginIt = str.begin();
+        auto endIt = str.begin();
+        auto arrIt = ret.begin();
+        do {
+            beginIt = std::find_if(endIt, str.end(), isWhitespace);
+            endIt = std::find_if_not(beginIt, str.end(), isWhitespace);
+            *arrIt = std::string(&*beginIt, endIt - beginIt);
+        } while (++arrIt != ret.end());
         return ret;
     }
 };
