@@ -29,11 +29,12 @@ class EnumInternal {
 #define ENUM(EnumType, UnderlyingType, ...) \
 class EnumType : EnumInternal { \
   public: \
-    enum EnumT { __VA_ARGS__, Unset }; \
+    enum EnumT : UnderlyingType { __VA_ARGS__, Unset }; \
     static inline const size_t Count = UnderlyingType(EnumT::Unset) + 1; \
   private: \
     UnderlyingType val; \
-    static inline const std::array<std::string, Count> _names = internalGetArr<Count>(#__VA_ARGS__); \
+    static inline const std::array<std::string, Count> _names = \
+        internalGetArr<Count>(#__VA_ARGS__); \
   public: \
     EnumType() : val(EnumT::Unset) {} \
     constexpr EnumType(UnderlyingType ul) : val(ul) {} \
@@ -47,7 +48,9 @@ class EnumType : EnumInternal { \
         else return EnumT::Unset; \
     } \
     const std::string &str() const { return _names[size_t(toUnderlying())]; } \
-    friend std::ostream &operator<<(std::ostream &os, const EnumType &val) { return os << val.str(); } \
+    friend std::ostream &operator<<(std::ostream &os, const EnumType &val) { \
+        return os << val.str(); \
+    } \
     bool valid() const { return static_cast<EnumT>(val) != EnumT::Unset; } \
     static std::array<EnumType, Count - 1> values() { \
         std::array<EnumType, Count - 1> ret; \

@@ -1,6 +1,6 @@
 // (c) Sam Donow 2017
 #pragma once
-#include "Enum.h"
+#include "util/Enum.h"
 
 ENUM(Symbol, char,
         Survey,

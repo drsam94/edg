@@ -1,6 +1,6 @@
 // (c) 2017 Sam Donow
 #pragma once
-#include "Util.h"
+#include "util/Util.h"
 #include "CoreEnums.h"
 #include <memory>
 #include <unordered_map>
