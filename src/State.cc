@@ -86,3 +86,54 @@ std::ostream &operator<<(std::ostream &os, const PlanetState &state) {
     }
     return os;
 }
+
+std::ostream &PlayerState::print(std::ostream &os, bool showHand) const {
+    os << "Player " << name << "'s hand:";
+    if (showHand) {
+        os << "\n";
+        for (ActionID id : hand) {
+            os << "  " << GodBook::instance().getAction(id) << "\n";
+        }
+    } else {
+        os << " " << hand.size();
+    }
+    os << "deck: " << deck.size() << " discard: " << discard.size();
+    // TODO print permanents/inPlay
+    os << "\nplanets:\n";
+    for (const PlanetState &pState : planets) {
+        os << "  " << pState << "\n";
+    }
+    os << "fighters: " << static_cast<int>(fighters)
+       << " influence: " << static_cast<int>(influence);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const PlayerState &state) {
+    return state.print(os, true);
+}
+
+std::ostream &operator<<(std::ostream &os, const RoleState &state) {
+    for (Role role : Role::values()) {
+        if (role == Role::Produce) continue;
+        os << RoleToAction(role) << ": " << state.count(role) << "\n";
+    }
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const TechTree &tree) {
+    return os << " UNIMPLEMENTED\n";
+}
+
+std::ostream &operator<<(std::ostream &os, const GameState &state) {
+    os << "players:\n";
+    for (const PlayerState &pState : state.players) {
+        pState.print(os, false);
+        os << "\n";
+    }
+
+    os << "roles:\n" << state.roles;
+    // TODO Print the top card of the Planet deck, but only FD
+    os << "techs available:\n" << state.availableTechs;
+    os << "influence available: " << static_cast<int>(state.unclaimedInfluence);
+    return os;
+}

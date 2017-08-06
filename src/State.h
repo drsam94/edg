@@ -27,6 +27,7 @@ struct PlanetState {
 };
 
 struct PlayerState {
+    std::string name;
     std::vector<ActionID> hand;
     std::vector<ActionID> deck;
     std::vector<ActionID> discard;
@@ -39,6 +40,7 @@ struct PlayerState {
     void draw(int cards);
     size_t staticSymCount(Symbol sym) const;
 
+    std::ostream &print(std::ostream &os, bool showHand) const;
     friend std::ostream &operator<<(std::ostream &os, const PlayerState &state);
 };
 
@@ -55,7 +57,9 @@ class RoleState {
             return true;
         }
     }
-    uint8_t count(Role role) const { return roleCards.find(RoleToAction(role))->second; }
+    int count(Role role) const {
+        return static_cast<int>(roleCards.find(RoleToAction(role))->second);
+    }
     void init(int numPlayers);
 
     friend std::ostream &operator<<(std::ostream &os, const RoleState &state);
@@ -89,9 +93,7 @@ struct GameState {
     std::deque<PlanetID> planetDeck;
     TechTree availableTechs;
     uint8_t unclaimedInfluence;
-    uint8_t unclaimedBlueInfluence;
     uint8_t currentPlayerIndex;
-    std::unordered_map<Resource, uint8_t> unclaimedResources;
     static std::mt19937 rng;
 
     bool endCondition() const { return false; }

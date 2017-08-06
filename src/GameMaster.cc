@@ -3,9 +3,12 @@
 #include <iostream>
 
 void GameMaster::init(size_t numPlayers) {
-    gameState.init(2);
+    gameState.init(numPlayers);
+    static constexpr std::array<const char *, 4> names = { "Inky", "Blinky", "Pinky", "Clyde" };
+    auto it = names.cbegin();
     for (PlayerState &state : gameState.players) {
-        players.emplace_back(&gameState, &state);
+        state.name = *(it++);
+        players.emplace_back(gameState, state);
     }
 }
 

@@ -36,7 +36,7 @@ EFFECT(Survey) {
 QUERY(Warfare) {
     return player.getAdapter().composedAlternatives("get fighter",
             &ChoiceAdapter::nullChoice, std::make_tuple(),
-            "attack planet", &ChoiceAdapter::chooseOneOfFDPlanets, std::forward_as_tuple(player.state->planets));
+            "attack planet", &ChoiceAdapter::chooseOneOfFDPlanets, std::forward_as_tuple(player.state.planets));
 }
 
 EFFECT(Warfare) {
@@ -51,10 +51,10 @@ EFFECT(Warfare) {
 QUERY(Colonize) {
     return player.getAdapter().composedAlternatives("Add a colony",
             &ChoiceAdapter::chooseOneOfFDPlanets,
-            std::make_tuple(std::cref(player.state->planets)),
+            std::make_tuple(std::cref(player.state.planets)),
             "Settle a planet",
             &ChoiceAdapter::chooseOneOfFDPlanets,
-            std::make_tuple(std::cref(player.state->planets)));
+            std::make_tuple(std::cref(player.state.planets)));
 }
 EFFECT(Colonize) {
     if (playerChoice[0] == 0) {
@@ -69,9 +69,9 @@ EFFECT(Colonize) {
 QUERY(ProduceTrade) {
     return player.getAdapter().composedAlternatives("Produce a resource",
             &ChoiceAdapter::chooseResourceSlots,
-            std::make_tuple(1, std::cref(player.state->planets), true),
+            std::make_tuple(1, std::cref(player.state.planets), true),
             "Trade a resource", &ChoiceAdapter::chooseResourceSlots,
-            std::make_tuple(1, std::cref(player.state->planets), false));
+            std::make_tuple(1, std::cref(player.state.planets), false));
 }
 EFFECT(ProduceTrade) {
     if (playerChoice[0] == 0) {
@@ -84,7 +84,7 @@ EFFECT(ProduceTrade) {
 
 // Extract "choose multiple cards in hand" logic from dissent and stuff
 QUERY(Research) {
-    return player.getAdapter().chooseCardsFromHand(player.state->hand, 2);
+    return player.getAdapter().chooseCardsFromHand(player.state.hand, 2);
 }
 
 EFFECT(Research) {
@@ -93,7 +93,7 @@ EFFECT(Research) {
 }
 
 QUERY(Politics) {
-    return player.getAdapter().chooseRole(player.gameState->roles, 1);
+    return player.getAdapter().chooseRole(player.gameState.roles, 1);
 }
 
 EFFECT(Politics) {

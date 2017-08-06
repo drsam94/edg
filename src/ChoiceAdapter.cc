@@ -51,7 +51,7 @@ std::vector<int> ChoiceAdapter::chooseRole(const RoleState &roles, int atMost) {
     display() << "Choose (" << atMost << ") roles\n";
     size_t i = 0;
     for (Role role : Role::values()) {
-        display() << i++ << ": " << role.str() << " (" << static_cast<int>(roles.count(role)) << " left)\n";
+        display() << i++ << ": " << role.str() << " (" << roles.count(role) << " left)\n";
     }
     std::vector<int> choices;
     int input;
@@ -84,6 +84,9 @@ std::vector<int> ChoiceAdapter::chooseOneOfFDPlanets(const std::vector<PlanetSta
 int TTYChoiceAdapter::getChoice() {
     int input;
     in >> input;
+    if (input == -7) {
+        display() << "GameState:\n" << gState << "\nPlayerState:\n" << pState << std::endl;
+    }
     return input;
 }
 

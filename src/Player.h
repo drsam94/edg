@@ -12,12 +12,11 @@ class Player {
     uint8_t actionsLeft;
     std::unique_ptr<ChoiceAdapter> adapter;
   public:
-    // TODO: these are set on construction and are never going to change, so they should probably be references
-    GameState *gameState;
-    PlayerState *state;
+    GameState &gameState;
+    PlayerState &state;
 
-    Player(GameState *_gameState, PlayerState *_state) :
-      adapter(new TTYChoiceAdapter(*_gameState, *_state)), gameState(_gameState), state(_state)  {}
+    Player(GameState &_gameState, PlayerState &_state) :
+      adapter(new TTYChoiceAdapter(_gameState, _state)), gameState(_gameState), state(_state)  {}
     /// Interface exposed to GameMaster
     ActionID getActionChoice();
     Role chooseRole();
