@@ -95,7 +95,7 @@ std::ostream &PlayerState::print(std::ostream &os, bool showHand) const {
             os << "  " << GodBook::instance().getAction(id) << "\n";
         }
     } else {
-        os << " " << hand.size();
+        os << " " << hand.size() << " ";
     }
     os << "deck: " << deck.size() << " discard: " << discard.size();
     // TODO print permanents/inPlay

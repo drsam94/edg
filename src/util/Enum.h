@@ -12,14 +12,14 @@ class EnumInternal {
     static constexpr std::array<std::string, N> internalGetArr(const std::string &&str) {
         std::array<std::string, N> ret;
         auto isWhitespace = [](char c) {
-            return c == '\n' || c == ',' || c == '\0' || c == ' ';
+            return c == '\n' || c == ',' || c == '\0' || c == ' ' || c == '\t';
         };
-        auto beginIt = str.begin();
-        auto endIt = str.begin();
+        auto endIt = str.cbegin();
+        auto beginIt = str.cbegin();
         auto arrIt = ret.begin();
         do {
-            beginIt = std::find_if(endIt, str.end(), isWhitespace);
-            endIt = std::find_if_not(beginIt, str.end(), isWhitespace);
+            beginIt = std::find_if_not(endIt, str.cend(), isWhitespace);
+            endIt = std::find_if(beginIt, str.end(), isWhitespace);
             *arrIt = std::string(&*beginIt, endIt - beginIt);
         } while (++arrIt != ret.end());
         return ret;
