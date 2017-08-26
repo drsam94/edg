@@ -47,9 +47,9 @@ ENUM(Phase, char, Action, RoleLeader, RoleFollower, Cleanup, None)
 
 #define COMMA(x) x,
 
-ENUM(ActionID, unsigned, ACT_ON_ALL_ACTIONS(COMMA) Invalid)
+ENUM(ActionID, unsigned, Survey, Warfare, Colonize, ProduceTrade, Research, Politics)
 
-ENUM(PlanetID, unsigned, ACT_ON_ALL_PLANETS(COMMA) Invalid)
+ENUM(PlanetID, unsigned, StartSaturn1, StartSaturn2, StartEarth1, StartEarth2, StartMars1, StartMars2)
 
 inline ActionID RoleToAction(Role role) {
     switch (role) {

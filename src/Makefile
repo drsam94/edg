@@ -9,28 +9,28 @@ cli: $(OBJS)
 	$(CC) $(CFLAGS) -O3 $(OBJS) main.cc -o ../bin/ed-cli
 
 test: $(OBJS)
-	$(CC) $(CFLAGS) -O0 -g $(OBJS) tests.cc -o ../bin/test-suite
+	$(CC) $(CFLAGS) -O3 -g $(OBJS) tests.cc -o ../bin/test-suite
 
 debug: $(OBJS)
-	$(CC) $(CFLAGS) -O0 -g $(OBJS) main.cc -o ../bin/ed-cli.debug
+	$(CC) $(CFLAGS) -O3 -g $(OBJS) main.cc -o ../bin/ed-cli.debug
 
 Cards.o: Cards.h CardDetails.h Cards.cc ActionDetails.cc PlanetDetails.cc GodBook.cc $(HDRS)
-	$(CC) $(CFLAGS) -c Cards.cc ActionDetails.cc PlanetDetails.cc GodBook.cc
+	$(CC) $(CFLAGS) -g -O3 -c Cards.cc ActionDetails.cc PlanetDetails.cc GodBook.cc
 
 ChoiceAdapter.o: ChoiceAdapter.h ChoiceAdapter.cc $(HDRS)
-	$(CC) $(CFLAGS) -c ChoiceAdapter.cc
+	$(CC) $(CFLAGS) -g -O3 -c ChoiceAdapter.cc
 
 GameMaster.o: GameMaster.h GameMaster.cc $(HRDS)
-	$(CC) $(CFLAGS) -c GameMaster.cc
+	$(CC) $(CFLAGS) -g -O3 -c GameMaster.cc
 
 GodBook.o: GodBook.h GodBook.cc
-	$(CC) $(CFLAGS) -c GodBook.cc
+	$(CC) $(CFLAGS) -g -O3 -c GodBook.cc
 
 State.o: State.h State.cc $(HDRS)
-	$(CC) $(CFLAGS) -c State.cc
+	$(CC) $(CFLAGS) -g -O3 -c State.cc
 
 Player.o: Player.h Player.cc $(HDRS)
-	$(CC) $(CFLAGS) -c Player.cc
+	$(CC) $(CFLAGS) -g -O3 -c Player.cc
 
 clean:
 	rm *.o

@@ -77,7 +77,8 @@ void GameState::init(int numPlayers) {
 std::ostream &operator<<(std::ostream &os, const PlanetState &state) {
     const Planet &planet = state.getCard();
     if (!state.revealed) {
-        os << "(FD) " << planet.type << " Costs: " << planet.colonyCost << "(c) " << planet.fighterCost << "(f) colonies: " << state.colonies.size();
+        os << "(FD) " << planet.type << " Costs: " << static_cast<int>(planet.colonyCost) << "(c) "
+           << static_cast<int>(planet.fighterCost) << "(f) colonies: " << state.colonies.size();
     } else {
         os << planet << (state.scorched ? " (scorched) " : "") << " res: ";
         for (size_t i = 0; i < planet.numResourceSlots(); ++i) {
